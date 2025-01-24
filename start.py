@@ -1,5 +1,20 @@
 import requests
 
+def checkPoint(words, expectedWords):
+    wordArray = words.split(" ")
+    score = 0
+    for i in len(expectedWords):
+        if wordArray[i] == expectedWords[i]:
+            score += 1
+        else:
+            print("Wrong word: ", wordArray[i])
+
+    print("SCORE : " + score)
+
+def typing():
+    words = input(str("go go typing: "))
+    return words()
+
 def selectLevel():
     print("SELECT LEVEL")
     print("1. EASY")
@@ -24,6 +39,7 @@ def getWords(level):
     if response.status_code == 200:
         words = [word["word"] for word in response.json()]
         print(" ".join(words))
+        checkPoint(typing(), words)
     else:
         print("Failed to fetch words.")
 
