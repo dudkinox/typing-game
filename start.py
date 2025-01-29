@@ -1,20 +1,5 @@
 import requests
 
-def checkPoint(words, expectedWords):
-    wordArray = words.split(" ")
-    score = 0
-    for i in len(expectedWords):
-        if wordArray[i] == expectedWords[i]:
-            score += 1
-        else:
-            print("Wrong word: ", wordArray[i])
-
-    print("SCORE : " + score)
-
-def typing():
-    words = input(str("go go typing: "))
-    return words()
-
 def selectLevel():
     print("SELECT LEVEL")
     print("1. EASY")
@@ -23,31 +8,45 @@ def selectLevel():
     print("4. EXPERT")
     level = input(str(": "))
 
-    if level == 1:
+    if level == "1":
         return 10
-    elif level == 2:
+    elif level == "2":
         return 20
-    elif level == 3:
+    elif level == "3":
         return 30
-    elif level == 4:
+    elif level == "4":
         return 40
     else:
         return 100
 
+def processScore(typeByPlayer, words):
+    score = 0
+    for i in range(len(typeByPlayer.split(" "))):
+        check = False
+        if words.split(" ")[i] == typeByPlayer.split(" ")[i]:
+            score += 1
+            check = True
+        operator = "=" if check else "!="
+        print(words.split(" ")[i] + operator + typeByPlayer.split(" ")[i]+"\n")
+
+    print("SUM SCORE : " + str(score))
+
 def getWords(level):
-    response = requests.get("https://api.datamuse.com/words?ml=happy&max=" + level)
+    response = requests.get("https://random-word-api.herokuapp.com/word?number=" + level)
+    # response = requests.get("https://random-word-api.herokuapp.com/word?number=1")
     if response.status_code == 200:
-        words = [word["word"] for word in response.json()]
-        print(" ".join(words))
-        checkPoint(typing(), words)
+        words = " ".join(response.json())
+        print(words)
+        typeByPlayer = input()
+        processScore(typeByPlayer, words)
     else:
-        print("Failed to fetch words.")
+        print("Failed to fetch words.\n==============")
 
 def startGame():
     print("ENTER 1 TO START THE GAME")
     isStart = input(str(": "))
 
-    if isStart == 1:
+    if isStart == "1":
         level = selectLevel()
         getWords(str(level))
     else:
