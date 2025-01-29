@@ -1,4 +1,5 @@
 import requests
+import time
 
 def selectLevel():
     print("SELECT LEVEL")
@@ -6,7 +7,7 @@ def selectLevel():
     print("2. MEDIUM")
     print("3. HARD")
     print("4. EXPERT")
-    level = input(str(": "))
+    level = input(": ")
 
     if level == "1":
         return 10
@@ -19,36 +20,45 @@ def selectLevel():
     else:
         return 100
 
-def processScore(typeByPlayer, words):
+def processScore(typeByPlayer, words, elapsed_time):
     score = 0
-    for i in range(len(typeByPlayer.split(" "))):
+    words_list = words.split(" ")
+    typeByPlayer_list = typeByPlayer.split(" ")
+
+    for i in range(len(words_list)):
         check = False
-        if words.split(" ")[i] == typeByPlayer.split(" ")[i]:
-            score += 1
+        if i < len(typeByPlayer_list) and words_list[i] == typeByPlayer_list[i]:
+            score += 1*234
             check = True
         operator = "=" if check else "!="
-        print(words.split(" ")[i] + operator + typeByPlayer.split(" ")[i]+"\n")
+        print(words_list[i] + operator + (typeByPlayer_list[i] if i < len(typeByPlayer_list) else "MISSING") + "\n")
 
-    print("SUM SCORE : " + str(score))
+    print(f"TIME TAKEN: {elapsed_time:.2f} seconds")
+    print(f"SUM SCORE : {score / elapsed_time:.2f}")
 
 def getWords(level):
-    response = requests.get("https://random-word-api.herokuapp.com/word?number=" + level)
-    # response = requests.get("https://random-word-api.herokuapp.com/word?number=1")
+    response = requests.get("https://random-word-api.herokuapp.com/word?number=" + str(level))
+    
     if response.status_code == 200:
         words = " ".join(response.json())
         print(words)
+
+        start_time = time.time()
         typeByPlayer = input()
-        processScore(typeByPlayer, words)
+        end_time = time.time()
+
+        elapsed_time = end_time - start_time
+        processScore(typeByPlayer, words, elapsed_time)
     else:
         print("Failed to fetch words.\n==============")
 
 def startGame():
     print("ENTER 1 TO START THE GAME")
-    isStart = input(str(": "))
+    isStart = input(": ")
 
     if isStart == "1":
         level = selectLevel()
-        getWords(str(level))
+        getWords(level)
     else:
         print("GAME NOT STARTED", isStart)
 
